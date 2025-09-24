@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🌟 A Little Date Idea</title>
+  <meta name="description" content="Say yes (or rain check) to a fun little plan." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card: #121826;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --accent: #7c3aed; /* violet-600 */
+      --accent-2: #22d3ee; /* cyan-400 */
+      --success: #10b981; /* emerald-500 */
+      --danger: #ef4444; /* red-500 */
+      --ring: rgba(124, 58, 237, .35);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% 10%, #0f172a 0%, var(--bg) 45%),
+                  radial-gradient(900px 600px at 90% 10%, #0b1324 0%, var(--bg) 55%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+    }
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      gap: 20px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(148,163,184,.15);
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      overflow: hidden;
+    }
+    header.hero {
+      position: relative;
+      padding: 28px clamp(18px, 4vw, 36px) 24px;
+    }
+    .badge {
+      display: inline-flex; gap: 8px; align-items: center;
+      background: rgba(124,58,237,.15);
+      color: #d6bcfa;
+      border: 1px solid rgba(124,58,237,.35);
+      padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      letter-spacing: .02em; text-transform: uppercase;
+    }
+    h1 { font-size: clamp(28px, 4vw, 44px); margin: 12px 0 8px; line-height: 1.1; }
+    p.lead { color: var(--muted); font-size: clamp(14px, 2.3vw, 18px); margin: 0 0 14px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .btn {
+      appearance: none; border: 0; cursor: pointer; font-weight: 700;
+      padding: 12px 16px; border-radius: 12px; transition: transform .06s ease, box-shadow .2s ease, background .2s, color .2s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #6d28d9 60%);
+      color: white; box-shadow: 0 8px 20px rgba(124,58,237,.35);
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-ghost {
+      background: rgba(255,255,255,.06);
+      color: var(--text); border: 1px solid rgba(148,163,184,.2);
+    }
+    .media-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
+      padding: 12px; border-top: 1px solid rgba(148,163,184,.15);
+      background: linear-gradient(180deg, transparent, rgba(255,255,255,0.02));
+    }
+    .tile { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 14px; }
+    .tile img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(1.05) contrast(1.05); }
+    .tile::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); border-radius: 14px; }
+
+    .form-card { padding: 22px clamp(18px, 4vw, 36px) 26px; }
+    .row { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .row.two { grid-template-columns: 1fr 1fr; } }
+    label { font-size: 13px; color: var(--muted); margin-bottom: 6px; display: inline-block; }
+    input, textarea, select {
+      width: 100%; background: rgba(255,255,255,.06); color: var(--text);
+      border: 1px solid rgba(148,163,184,.25); border-radius: 12px;
+      padding: 12px 14px; font-size: 14px; outline: none;
+      transition: box-shadow .15s ease, border-color .15s ease, background .2s ease;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 6px var(--ring); }
+    textarea { min-height: 90px; resize: vertical; }
+
+    .choice {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;
+    }
+    .yes { background: linear-gradient(135deg, var(--success), #059669); color: white; }
+    .no { background: linear-gradient(135deg, var(--danger), #b91c1c); color: white; }
+
+    .note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+    .success, .error { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 12px; font-weight: 600; }
+    .success { background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35); color: #bbf7d0; }
+    .error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.35); color: #fecaca; }
+
+    .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .footer a { color: #c4b5fd; text-underline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <!-- HERO / PITCH CARD -->
+    <section class="card">
+      <header class="hero">
+        <span class="badge">💡 A Tiny Proposal</span>
+        <h1>How about <span style="background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent">this date idea</span> together?</h1>
+        <p class="lead">I found something fun I think you'd like. Check it out below—then tap <strong>Yes</strong> or <strong>Rain check</strong>. I'll get a (very excited) email either way.</p>
+        <div class="actions">
+          <!-- TODO: Replace href with your activity link (tickets, restaurant, event, etc.) -->
+          <a class="btn btn-primary" href="https://example.com/activity" target="_blank" rel="noopener">See the plan ↗</a>
+          <a class="btn btn-ghost" href="#rsvp">Skip to RSVP</a>
+        </div>
+      </header>
+      <div class="media-grid">
+        <!-- Replace the images below with your own URLs -->
+        <figure class="tile"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop" alt="City lights" /></figure>
+        <figure class="tile"><img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1200&auto=format&fit=crop" alt="Dinner vibe" /></figure>
+        <figure class="tile"><img src="https://images.unsplash.com/photo-1463595373836-6e0b0a8ee322?q=80&w=1200&auto=format&fit=crop" alt="Stargazing" /></figure>
+        <figure class="tile"><img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop" alt="Cozy walk" /></figure>
+      </div>
+    </section>
+
+    <!-- RSVP CARD -->
+    <section id="rsvp" class="card form-card">
+      <form id="rsvpForm">
+        <div class="row two">
+          <div>
+            <label for="theirName">Your name</label>
+            <input id="theirName" name="theirName" placeholder="e.g., Taylor" autocomplete="name" required />
+          </div>
+          <div>
+            <label for="contact">How should I follow up? (optional)</label>
+            <input id="contact" name="contact" placeholder="Phone, IG, or email" autocomplete="email" />
+          </div>
+        </div>
+        <div class="row two">
+          <div>
+            <label for="when">When works for you? (optional)</label>
+            <input id="when" name="when" type="text" placeholder="This Friday evening?" />
+          </div>
+          <div>
+            <label for="activityPref">Any preferences? (optional)</label>
+            <select id="activityPref" name="activityPref">
+              <option value="">Surprise me 🎁</option>
+              <option>Dinner</option>
+              <option>Museum</option>
+              <option>Mini‑golf</option>
+              <option>Movie</option>
+              <option>Walk + coffee</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="note">Leave a note (optional)</label>
+            <textarea id="note" name="note" placeholder="Allergies, must‑have snacks, hype speech…"></textarea>
+          </div>
+        </div>
+        <div class="choice">
+          <button class="btn yes" type="button" data-choice="Yes">Yes, let’s go! ✨</button>
+          <button class="btn no" type="button" data-choice="No">Rain check 🌧️</button>
+        </div>
+        <p class="note">When you choose, I’ll get an email with your response and details above.</p>
+        <div class="success" id="success">Thanks! I got your response. I’ll follow up soon. 💌</div>
+        <div class="error" id="error">Hmm, something went wrong. Could you try again?</div>
+      </form>
+      <div class="footer">Made with ❤️ and a little JavaScript • <a href="#" id="swapLink">Swap theme</a></div>
+    </section>
+  </main>
+
+  <script>
+    // ====== CONFIGURE THIS: your Formspree endpoint ======
+    // 1) Create a form at https://formspree.io/forms
+    // 2) Replace YOUR_FORM_ID below with your actual ID (e.g., "xyzzabcd")
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xovkvqvr";
+
+    // ====== RSVP logic ======
+    const form = document.getElementById('rsvpForm');
+    const successEl = document.getElementById('success');
+    const errorEl = document.getElementById('error');
+
+    // Attach handlers to choice buttons
+    document.querySelectorAll('[data-choice]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const choice = btn.getAttribute('data-choice');
+        successEl.style.display = 'none';
+        errorEl.style.display = 'none';
+
+        // Collect form data
+        const data = {
+          choice,
+          theirName: form.theirName.value.trim(),
+          contact: form.contact.value.trim(),
+          when: form.when.value.trim(),
+          activityPref: form.activityPref.value,
+          note: form.note.value.trim(),
+          // Include context about the page
+          pageTitle: document.title,
+          pageUrl: location.href
+        };
+
+        if (!data.theirName) {
+          form.theirName.focus();
+          form.theirName.reportValidity();
+          return;
+        }
+
+        // Send via Formspree using JSON
+        try {
+          const res = await fetch(FORMSPREE_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(data)
+          });
+
+          if (res.ok) {
+            successEl.style.display = 'block';
+            form.reset();
+            // cute burst on YES
+            if (choice === 'Yes') confetti();
+          } else {
+            errorEl.style.display = 'block';
+          }
+        } catch (e) {
+          errorEl.style.display = 'block';
+        }
+      });
+    });
+
+    // Minimal confetti without external libs 🎉
+    function confetti() {
+      const count = 120; const defaults = { spread: 80, ticks: 220 };
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('span');
+        p.style.position = 'fixed';
+        p.style.left = (Math.random() * 100) + 'vw';
+        p.style.top = '-8px';
+        p.style.width = p.style.height = (6 + Math.random()*6) + 'px';
+        p.style.background = `hsl(${Math.floor(Math.random()*360)}, 90%, 60%)`;
+        p.style.borderRadius = Math.random() > .7 ? '50%' : '4px';
+        p.style.pointerEvents = 'none';
+        p.style.zIndex = 9999;
+        document.body.appendChild(p);
+        const dx = (Math.random() - .5) * 2; // drift
+        const fall = () => {
+          const y = parseFloat(p.style.top);
+          const x = parseFloat(p.style.left);
+          p.style.top = (y + 3 + Math.random()*2) + 'px';
+          p.style.left = (x + dx) + 'px';
+          p.style.transform = `rotate(${(y*3)%360}deg)`;
+          if (y < window.innerHeight + 20) requestAnimationFrame(fall); else p.remove();
+        };
+        requestAnimationFrame(fall);
+      }
+    }
+
+    // Fun theme swap
+    const swap = document.getElementById('swapLink');
+    swap.addEventListener('click', (e) => {
+      e.preventDefault();
+      const dark = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() === '#0b0f17';
+      if (dark) {
+        document.documentElement.style.setProperty('--bg', '#f5f7fb');
+        document.documentElement.style.setProperty('--card', '#ffffff');
+        document.documentElement.style.setProperty('--text', '#0b1220');
+        document.documentElement.style.setProperty('--muted', '#4b5563');
+      } else {
+        document.documentElement.style.setProperty('--bg', '#0b0f17');
+        document.documentElement.style.setProperty('--card', '#121826');
+        document.documentElement.style.setProperty('--text', '#e5e7eb');
+        document.documentElement.style.setProperty('--muted', '#94a3b8');
+      }
+      document.body.style.background = dark
+        ? 'radial-gradient(1200px 800px at 10% 10%, #f0f4ff 0%, var(--bg) 55%), radial-gradient(900px 600px at 90% 10%, #eaeef9 0%, var(--bg) 65%)'
+        : 'radial-gradient(1200px 800px at 10% 10%, #0f172a 0%, var(--bg) 45%), radial-gradient(900px 600px at 90% 10%, #0b1324 0%, var(--bg) 55%)';
+    });
+  </script>
+</body>
+</html>
