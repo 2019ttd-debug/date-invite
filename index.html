@@ -110,7 +110,7 @@
           </div>
           <div>
             <label for="whenTime">Time</label>
-            <input id="whenTime" name="whenTime" type="text" placeholder="e.g., 7:00 PM" />
+            <input id="whenTime" name="whenTime" type="time" step="1800" />
           </div>
         </div>
         <div class="row">
@@ -132,15 +132,35 @@
   </main>
 
   <script>
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+    // Auto-select the closest upcoming Fri/Sat/Sun
+    function autoPickDay(){
+      const sel = document.getElementById('whenDay');
+      if (!sel) return;
+      const today = new Date();
+      const map = {0:'Sunday',1:'Monday',2:'Tuesday',3:'Wednesday',4:'Thursday',5:'Friday',6:'Saturday'};
+      const targets = ['Friday','Saturday','Sunday'];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(today); d.setDate(today.getDate()+i);
+        const name = map[d.getDay()];
+        if (targets.includes(name)) { sel.value = name; break; }
+      }
+    }
+    autoPickDay(); // run on load
+
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xovkvqvr";
     const form = document.getElementById('rsvpForm');
     const successEl = document.getElementById('success');
     const errorEl = document.getElementById('error');
+
     document.querySelectorAll('[data-choice]').forEach(btn => {
       btn.addEventListener('click', async () => {
         const choice = btn.getAttribute('data-choice');
         successEl.style.display = 'none';
         errorEl.style.display = 'none';
+
+        // prevent double submits
+        btn.disabled = true;
+
         const data = {
           choice,
           whenDay: form.whenDay.value,
@@ -155,11 +175,30 @@
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(data)
           });
-          if (res.ok) { successEl.style.display = 'block'; form.reset(); confetti(choice); }
-          else { errorEl.style.display = 'block'; }
-        } catch (e) { errorEl.style.display = 'block'; }
+
+          if (res.ok) {
+            successEl.style.display = 'block';
+            successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            form.reset();
+            autoPickDay(); // re-select closest day after reset
+            confetti(choice);
+          } else {
+            // Try to surface a helpful error message
+            const text = await res.text();
+            try {
+              const j = JSON.parse(text);
+              if (j.errors?.length) errorEl.textContent = j.errors[0].message;
+            } catch {}
+            errorEl.style.display = 'block';
+          }
+        } catch (e) {
+          errorEl.style.display = 'block';
+        } finally {
+          btn.disabled = false;
+        }
       });
     });
+
     function confetti(choice) {
       let count = choice === 'Definitely Yes!!' ? 250 : 120;
       for (let i = 0; i < count; i++) {
@@ -174,6 +213,7 @@
         requestAnimationFrame(fall);
       }
     }
+
     document.getElementById('swapLink').addEventListener('click',(e)=>{
       e.preventDefault();
       const dark=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()==='#0b0f17';
