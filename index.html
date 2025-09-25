@@ -142,7 +142,18 @@
   <footer class="signature">
     <p>First off, I feel like we need to take a moment to appreciate the awesomeness of this </p>
   </footer>
-
+<script>
+    // Send a ping to Formspree when someone visits
+    fetch("https://formspree.io/f/xovkvqvr", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        visit: "New page view",
+        pageUrl: location.href,
+        time: new Date().toISOString()
+      })
+    }).catch(err => console.error("Visit ping failed", err));
+  </script>
   <script>
     function autoPickDay(){
       const sel = document.getElementById('whenDay');
